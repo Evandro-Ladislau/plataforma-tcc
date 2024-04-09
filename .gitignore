@@ -8,4 +8,4 @@ obj/
 
 # Arquivo do projeto e solução
 plataforma-tcc.csproj
-plataforma-tcc.sln
+plataforma-tcc.slnconstrução do container docker mysql, classe modelo do dominio de cliente e gitignore
