@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  mysql_server:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=plataforma_tcc_2024
+      - MYSQL_DATABASE=client_data
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql-scripts:/docker-entrypoint-initdb.d  # Adicionando essa linha
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  mysql_data:
+

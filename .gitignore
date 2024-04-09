@@ -1,0 +1,11 @@
+# Arquivos e pastas a serem ignorados
+
+# Pastas binárias
+bin/
+
+# Arquivos de compilação e objetos
+obj/
+
+# Arquivo do projeto e solução
+plataforma-tcc.csproj
+plataforma-tcc.sln
