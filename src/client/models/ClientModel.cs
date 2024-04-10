@@ -10,12 +10,10 @@ namespace Client.Models
         public string Email { get; set; }
         private DateTime _birthDate;
         public DateTime Created_At {get; set;}
-        public DateTime Created_At {get; set;}
         public DateTime GetBithDate()
         {
             return _birthDate.Date;
         }
-
         public void SetBirthDate(DateTime birthDate)
         {
             _birthDate = birthDate;
