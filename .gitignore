@@ -5,7 +5,3 @@ bin/
 
 # Arquivos de compilação e objetos
 obj/
-
-# Arquivo do projeto e solução
-plataforma-tcc.csproj
-plataforma-tcc.slnconstrução do container docker mysql, classe modelo do dominio de cliente e gitignore
