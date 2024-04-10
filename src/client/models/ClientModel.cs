@@ -1,6 +1,6 @@
 using System;
 
-namespace Client.Models
+namespace client.models
 {
     public class ClientModel
     {

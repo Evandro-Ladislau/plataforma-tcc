@@ -1,5 +1,6 @@
 ﻿using System;
-using Client.Models;
+using client.models;
+using client.storage;
 
 namespace plataforma_tcc
 {
@@ -11,6 +12,15 @@ namespace plataforma_tcc
             cli1.Name = "Evandro";
             
             Console.WriteLine(cli1.Name);
+
+            ClientStorage conn = new ClientStorage();
+
+            var listNames = conn.GetClientNames();
+            foreach (var item in listNames)
+            {
+                Console.WriteLine(item);
+            }
+
         }
     }
 }
