@@ -1,6 +1,7 @@
 using System;
 using MySql.Data.MySqlClient;
 using client.models;
+using NLog;
 
 namespace client.storage 
 {
@@ -8,6 +9,7 @@ namespace client.storage
     {
         private string _connectionString = "Server=localhost;Database=client_data;Uid=root;Pwd=plataforma_tcc_2024;";
         private MySqlConnection _connection;
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public ClientStorage()
         {
             _connection = new MySqlConnection(_connectionString);
@@ -41,7 +43,7 @@ namespace client.storage
 
         private void HandleError(Exception ex)
         {
-            //logger.Error(ex, "Erro ao inserir os dados do cliente: {Messege}", ex.Message);
+            logger.Error(ex, "Erro ao inserir os dados do cliente: {Messege}", ex.Message);
         }
     }
 }
