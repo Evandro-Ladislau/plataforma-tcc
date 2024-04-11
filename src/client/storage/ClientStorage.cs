@@ -1,40 +1,47 @@
 using System;
-using System.Collections.Generic;
 using MySql.Data.MySqlClient;
+using client.models;
 
 namespace client.storage 
 {
     class ClientStorage
     {
-        string connectionString = "Server=localhost;Database=client_data;Uid=root;Pwd=plataforma_tcc_2024;";
-
-        public List<string> GetClientNames()
+        private string _connectionString = "Server=localhost;Database=client_data;Uid=root;Pwd=plataforma_tcc_2024;";
+        private MySqlConnection _connection;
+        public ClientStorage()
         {
-            List<string> ListclientName = new List<string>();
+            _connection = new MySqlConnection(_connectionString);
+            _connection.Open();
+        }
 
+        public void Insert(ClientModel client)
+        {
             try
             {
-                using (var connection = new MySqlConnection(connectionString))
+                string sql = "INSERT INTO client (name, surname, email, birthdate, created_at, updated_at, active) VALUES (@Name, @Surname, @Email, @BirthDate, @CreatedAt, @UpdatedAt, @Active)";
+                
+                using (MySqlCommand command = new MySqlCommand(sql, _connection))
                 {
-                    connection.Open();
-                    var sql = "SELECT surname FROM client"; // Seleciona apenas a coluna name
-                    MySqlCommand command = new MySqlCommand(sql, connection);
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string clientName = reader.GetString(0); // Obtém o valor da primeira coluna como um inteiro
-                            ListclientName.Add(clientName); // Adiciona o name do cliente à lista
-                        }
-                    }
+                    command.Parameters.AddWithValue("@Name", client.Name);
+                    command.Parameters.AddWithValue("@Surname", client.Surname);
+                    command.Parameters.AddWithValue("@Email", client.Email);
+                    command.Parameters.AddWithValue("@BirthDate", client.BirthDate);
+                    command.Parameters.AddWithValue("@CreatedAt", client.CreatedAt);
+                    command.Parameters.AddWithValue("@UpdatedAt", client.UpdatedAt);
+                    command.Parameters.AddWithValue("@Active", client.Active);
+                    
+                    command.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Erro:" + ex.Message);
+                HandleError(ex);
             }
+        }
 
-            return ListclientName; // Retorna a lista com os IDs dos clientes
+        private void HandleError(Exception ex)
+        {
+            //logger.Error(ex, "Erro ao inserir os dados do cliente: {Messege}", ex.Message);
         }
     }
 }

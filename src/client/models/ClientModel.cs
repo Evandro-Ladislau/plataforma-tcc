@@ -8,15 +8,20 @@ namespace client.models
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
-        private DateTime _birthDate;
-        public DateTime Created_At {get; set;}
-        public DateTime GetBithDate()
+        public  DateTime BirthDate {get; set;}
+        public DateTime CreatedAt {get; set;}
+        public DateTime UpdatedAt {get; set;}
+        public bool Active {get; set;}
+
+         public ClientModel(string name, string surname, string email, DateTime birthDate)
         {
-            return _birthDate.Date;
-        }
-        public void SetBirthDate(DateTime birthDate)
-        {
-            _birthDate = birthDate;
+            Name = name;
+            Surname = surname;
+            Email = email;
+            BirthDate = birthDate;
+            CreatedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
+            Active = true;
         }
     }
 }

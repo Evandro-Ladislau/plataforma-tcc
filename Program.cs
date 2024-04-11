@@ -8,19 +8,11 @@ namespace plataforma_tcc
     {
         static void Main(string[] args)
         {
-            ClientModel cli1 = new ClientModel();
-            cli1.Name = "Evandro";
-            
-            Console.WriteLine(cli1.Name);
+            DateTime dateT = new DateTime(1979, 03, 20);
+            ClientModel cli1 = new ClientModel("Cecilia", "Ladislau", "cecilialadsialu@plataformaimpact.com", dateT);
 
-            ClientStorage conn = new ClientStorage();
-
-            var listNames = conn.GetClientNames();
-            foreach (var item in listNames)
-            {
-                Console.WriteLine(item);
-            }
-
+            //ClientStorage storage = new ClientStorage();
+            //storage.Insert(cli1);
         }
     }
 }
