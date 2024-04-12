@@ -1,6 +1,7 @@
 ﻿using System;
 using client.models;
 using client.storage;
+using client.api;
 
 namespace plataforma_tcc
 {
@@ -8,11 +9,12 @@ namespace plataforma_tcc
     {
         static void Main(string[] args)
         {
-            DateTime dateT = new DateTime(1979, 03, 20);
-            ClientModel cli1 = new ClientModel("Cecilia", "Ladislau", "cecilialadsialu@plataformaimpact.com", dateT);
+            // Prefixos URI que o servidor vai escutar
+            string[] prefixes = { "http://localhost:8080/" };
 
-            //ClientStorage storage = new ClientStorage();
-            //storage.Insert(cli1);
+            // Cria uma instância de ClientApi e inicia o servidor
+            ClientApi api = new ClientApi();
+            api.Start(prefixes);
         }
     }
 }

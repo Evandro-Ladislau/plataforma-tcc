@@ -43,7 +43,7 @@ namespace client.storage
 
         private void HandleError(Exception ex)
         {
-            logger.Error(ex, "Erro ao inserir os dados do cliente: {Messege}", ex.Message);
+            logger.Error(ex, ex.Message);
         }
     }
 }
