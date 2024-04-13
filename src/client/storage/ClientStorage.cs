@@ -33,17 +33,13 @@ namespace client.storage
                     command.Parameters.AddWithValue("@Active", client.Active);
                     
                     command.ExecuteNonQuery();
+                    logger.Info("Client inserted successfully.");
                 }
             }
             catch (Exception ex)
             {
-                HandleError(ex);
+                logger.Error($"Error inserting client: {ex.Message}");
             }
-        }
-
-        private void HandleError(Exception ex)
-        {
-            logger.Error(ex, ex.Message);
-        }
+        }    
     }
 }

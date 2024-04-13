@@ -13,12 +13,8 @@ namespace client.models
         public DateTime UpdatedAt {get; set;}
         public bool Active {get; set;}
 
-         public ClientModel(string name, string surname, string email, DateTime birthDate)
+        public ClientModel() 
         {
-            Name = name;
-            Surname = surname;
-            Email = email;
-            BirthDate = birthDate;
             CreatedAt = DateTime.Now;
             UpdatedAt = DateTime.Now;
             Active = true;

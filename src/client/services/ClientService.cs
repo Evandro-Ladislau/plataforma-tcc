@@ -7,12 +7,9 @@ namespace client.services
     class ClientService 
     {
         private ClientStorage storage = new ClientStorage();
-       // private ClientModel client;
-        public void insert()
+        public void Insert(ClientModel client)
         {
-            //validar os dados recebiudos via json;
-           //client = new ClientModel();
-           //storage.insert(client);
+           storage.Insert(client);
         }
     }
 }

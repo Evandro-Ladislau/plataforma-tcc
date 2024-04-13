@@ -9,12 +9,9 @@ namespace plataforma_tcc
     {
         static void Main(string[] args)
         {
-            // Prefixos URI que o servidor vai escutar
-            string[] prefixes = { "http://localhost:8080/" };
-
             // Cria uma instância de ClientApi e inicia o servidor
             ClientApi api = new ClientApi();
-            api.Start(prefixes);
+            api.Start();
         }
     }
 }
