@@ -16,7 +16,7 @@ namespace client.storage
             _connection.Open();
         }
 
-        public void Insert(ClientModel client)
+        public bool Insert(ClientModel client)
         {
             try
             {
@@ -34,12 +34,16 @@ namespace client.storage
                     
                     command.ExecuteNonQuery();
                     logger.Info("Client inserted successfully.");
+
+                    return true;
                 }
             }
             catch (Exception ex)
             {
                 logger.Error($"Error inserting client: {ex.Message}");
             }
+
+            return false;
         }    
     }
 }

@@ -59,24 +59,35 @@ namespace client.api
             try
             {
                 client = JsonConvert.DeserializeObject<ClientModel>(requestBody);
-                service.Insert(client);
             }
             catch (JsonException ex)
             {
                 logger.Error($"Error deserializing JSON: {ex.Message}");
             }
-            
-            // Resposta simples para confirmar a inserção
-            string responseString = "<html><body><h1>Cliente inserido com sucesso!</h1></body></html>";
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
+            var responseInsert = service.Insert(client);
+            
+            if(responseInsert){
+                SendResponse(response, HttpStatusCode.OK, "Client Inserted successfully");
+
+            }else{
+                SendResponse(response, HttpStatusCode.BadRequest, "All customer data must be filled in correctly!");     
+            }
+        }
+    
+        private void SendResponse(HttpListenerResponse response, HttpStatusCode statusCode, string message)
+        {
+            response.StatusCode = (int)statusCode;
+            response.ContentType = "text/plain";
+
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes($"{(int)statusCode} - " + message);
             response.ContentLength64 = buffer.Length;
             response.OutputStream.Write(buffer, 0, buffer.Length);
             response.OutputStream.Close();
         }
-
         private void DefaultRequest(HttpListenerResponse response)
         {
+            //PRECISO MELHORAR ESSE METODO E VER SE REALMENTE É NECESSÁRIO
             string responseString = "<html><body><h1>Endpoint não encontrado</h1></body></html>";
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
