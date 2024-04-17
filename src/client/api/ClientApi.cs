@@ -15,7 +15,7 @@ namespace client.api
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public void Start()
         {
-            string[] prefixes = { "http://localhost:8080/client/" };
+            string[] prefixes = { "http://localhost:8080/" };
             HttpListener listener = new HttpListener();
 
             foreach (string s in prefixes)
@@ -24,7 +24,9 @@ namespace client.api
             }
 
             listener.Start();
-            logger.Info("Server started and listening...");
+            // Recuperando a porta em que o listener está rodando
+            string port = listener.Prefixes.First().Split(':')[2].TrimEnd('/');
+            logger.Info($"Server started and listening on port {port}...");
 
             while (true)
             {
@@ -34,20 +36,20 @@ namespace client.api
 
                 logger.Info($"Request: {request.HttpMethod} {request.Url}");
 
-                Console.WriteLine($"Request: {request.HttpMethod} {request.Url}");
-
                 if (request.HttpMethod == "POST" && request.Url.AbsolutePath == "/client")
                 {
                     InsertClient(request, response);
                 }
+                else if(request.HttpMethod == "GET" && request.Url.AbsolutePath == "/client")
+                {
+                    SelectClient(request, response);
+                }
                 else
                 {
-                    // Rota padrão
                     DefaultRequest(response);
                 }
             }
         }
-
         private void InsertClient(HttpListenerRequest request, HttpListenerResponse response)
         {
             string requestBody;
@@ -74,7 +76,34 @@ namespace client.api
                 SendResponse(response, HttpStatusCode.BadRequest, "All customer data must be filled in correctly!");     
             }
         }
-    
+
+        private void SelectClient(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            try
+            {
+                string requestBody;
+                using (StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding))
+                {
+                    requestBody = reader.ReadToEnd();
+                }
+
+                List<ClientModel> clientList = service.Select();
+
+                if(clientList != null)
+                {
+                    string responseBody = JsonConvert.SerializeObject(clientList);
+                    SendResponse(response, HttpStatusCode.OK, responseBody);
+                }
+                else
+                {
+                    SendResponse(response, HttpStatusCode.NotFound, "No clients found");
+                }
+            }
+            catch (Exception ex)
+            {
+                SendResponse(response, HttpStatusCode.InternalServerError, $"Error: {ex.Message}");
+            }
+        }
         private void SendResponse(HttpListenerResponse response, HttpStatusCode statusCode, string message)
         {
             response.StatusCode = (int)statusCode;
@@ -87,8 +116,7 @@ namespace client.api
         }
         private void DefaultRequest(HttpListenerResponse response)
         {
-            //PRECISO MELHORAR ESSE METODO E VER SE REALMENTE É NECESSÁRIO
-            string responseString = "<html><body><h1>Endpoint não encontrado</h1></body></html>";
+            string responseString = "Endpoint not found!";
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
             response.ContentLength64 = buffer.Length;

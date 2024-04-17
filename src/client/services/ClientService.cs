@@ -10,28 +10,35 @@ namespace client.services
     {
         private ClientStorage storage = new ClientStorage();
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private List<ClientModel> clientList;
         public bool Insert(ClientModel client)
         {
             var isValidateDataClient = IsValidDataClient(client);
 
             if(isValidateDataClient){
-                //Console.WriteLine("Cliente Name: " + client.Name);
                 storage.Insert(client);
             }
             
             return isValidateDataClient;
         }
 
+        public List<ClientModel> Select()
+        {
+            clientList = storage.Select();
+            return clientList;
+        }
+
         public bool IsValidDataClient(ClientModel client)
         {
-            if (!string.IsNullOrEmpty(client.Name) && !string.IsNullOrWhiteSpace(client.Name) &&!string.IsNullOrEmpty(client.Surname) && !string.IsNullOrWhiteSpace(client.Surname))
+            if (!string.IsNullOrEmpty(client.Name) && !string.IsNullOrWhiteSpace(client.Name) && !string.IsNullOrEmpty(client.Surname) && !string.IsNullOrWhiteSpace(client.Surname) && client.BirthDate != DateTime.MinValue)
             {
                 string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
                 Regex regex = new Regex(pattern);
+                logger.Info("Validated customer data!");
                 return regex.IsMatch(client.Email);
             }
             
-            logger.Info("All customer data must be filled in correctly!");
+            logger.Error("All customer data must be filled in correctly!");
             return false;
         }
     }

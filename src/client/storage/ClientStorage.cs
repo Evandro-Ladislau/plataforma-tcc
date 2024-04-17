@@ -10,6 +10,7 @@ namespace client.storage
         private string _connectionString = "Server=localhost;Database=client_data;Uid=root;Pwd=plataforma_tcc_2024;";
         private MySqlConnection _connection;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        List<ClientModel> clientList = new List<ClientModel>();
         public ClientStorage()
         {
             _connection = new MySqlConnection(_connectionString);
@@ -44,6 +45,45 @@ namespace client.storage
             }
 
             return false;
-        }    
+        }  
+
+        public List<ClientModel> Select()
+        {
+            try
+            {
+                string sql = "SELECT name, surname, birthdate, active FROM client";
+                
+                using (MySqlCommand command = new MySqlCommand(sql, _connection))
+                {
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string name = reader.GetString("name");
+                            string surname = reader.GetString("surname");
+                            DateTime birthdate = reader.GetDateTime("birthdate"); // Corrigido para DateTime
+                            bool active = reader.GetBoolean("active"); // Corrigido para GetBoolean
+
+                            ClientModel client = new ClientModel();
+                            client.Name = name;
+                            client.Surname = surname;
+                            client.BirthDate = birthdate; 
+                            client.Active = active;
+
+                            clientList.Add(client);
+                        }
+                    }
+
+                    return clientList;
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                logger.Error($"Error inserting client: {ex.Message}");
+            }
+
+            return clientList;
+        }  
     }
 }
