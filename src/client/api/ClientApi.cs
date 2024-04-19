@@ -24,7 +24,7 @@ namespace client.api
             }
 
             listener.Start();
-            // Recuperando a porta em que o listener está rodando
+            
             string port = listener.Prefixes.First().Split(':')[2].TrimEnd('/');
             logger.Info($"Server started and listening on port {port}...");
 
@@ -95,14 +95,22 @@ namespace client.api
                 SendResponse(response, HttpStatusCode.BadRequest, "Invalid JSON format");
                 return;
             }
-
-            var responseInsert = service.Insert(client);
+            try
+            {
+                var responseInsert = service.Insert(client);
             
-            if(responseInsert){
-                SendResponse(response, HttpStatusCode.OK, "Client Inserted successfully");
-
-            }else{
-                SendResponse(response, HttpStatusCode.BadRequest, "All customer data must be filled in correctly!");     
+                if(responseInsert)
+                {
+                    SendResponse(response, HttpStatusCode.OK, "Client Inserted successfully");
+                }
+                else
+                {
+                    SendResponse(response, HttpStatusCode.BadRequest, "All customer data must be filled in correctly!");     
+                }
+            }
+            catch (Exception ex)
+            {
+                SendResponse(response, HttpStatusCode.InternalServerError, $"Error: {ex.Message}");
             }
         }
 
@@ -170,22 +178,24 @@ namespace client.api
                 SendResponse(response, HttpStatusCode.BadRequest, "Invalid JSON format");
                 return;
             }
-            
-            if (client == null)
+            try
             {
-                SendResponse(response, HttpStatusCode.BadRequest, "Invalid client data");
-                return;
-            }    
-            var responseUpdate = service.Update(id, client);
+                var responseUpdate = service.Update(id, client);
 
-            if (responseUpdate)
-            {
-                SendResponse(response, HttpStatusCode.OK, "Client updated successfully");
+                if (responseUpdate)
+                {
+                    SendResponse(response, HttpStatusCode.OK, "Client updated successfully");
+                }
+                else
+                {
+                    SendResponse(response, HttpStatusCode.BadRequest, "Invalid client data");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                SendResponse(response, HttpStatusCode.NotFound, "No client found with the provided ID.");
-            }
+                logger.Error($"Error updating client: {ex.Message}");
+                SendResponse(response, HttpStatusCode.InternalServerError, $"Error updating client: {ex.Message}");
+            } 
         }
 
         private void DeleteClient(HttpListenerRequest request, HttpListenerResponse response, int id)

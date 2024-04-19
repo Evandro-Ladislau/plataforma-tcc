@@ -13,7 +13,7 @@ namespace client.services
         private List<ClientModel> clientList;
         public bool Insert(ClientModel client)
         {
-            var isValidateDataClient = IsValidDataClient(client);
+            bool isValidateDataClient = IsValidDataClient(client);
 
             if(isValidateDataClient){
                 storage.Insert(client);
@@ -33,24 +33,11 @@ namespace client.services
             ClientModel client = storage.selectById(id);
             return client;
         }
-        public bool IsValidDataClient(ClientModel client)
-        {
-            if (!string.IsNullOrEmpty(client.Name) && !string.IsNullOrWhiteSpace(client.Name) && !string.IsNullOrEmpty(client.Surname) && !string.IsNullOrWhiteSpace(client.Surname) && client.BirthDate != DateTime.MinValue)
-            {
-                string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-                Regex regex = new Regex(pattern);
-                logger.Info("Validated customer data!");
-                return regex.IsMatch(client.Email);
-            }
-            
-            logger.Error("All customer data must be filled in correctly!");
-            return false;
-        }
-
+        
         public bool Update(int id, ClientModel client)
         {
-            var isValidateDataClient = IsValidDataClient(client);
-            var clienteUpdate = storage.Update(id, client);
+            bool isValidateDataClient = IsValidDataClient(client);
+            bool clienteUpdate = storage.Update(id, client);
 
             if(isValidateDataClient && clienteUpdate){
                 
@@ -62,13 +49,31 @@ namespace client.services
 
         public bool Delete(int id)
         {
-            var clienteDelete = storage.Delete(id);
+            bool clienteDelete = storage.Delete(id);
 
             if(clienteDelete){
 
                 return true;
             }
 
+            return false;
+        }
+        public bool IsValidDataClient(ClientModel client)
+        {
+            if (!string.IsNullOrEmpty(client.Name) 
+            && !string.IsNullOrWhiteSpace(client.Name) 
+            && !string.IsNullOrEmpty(client.Surname) 
+            && !string.IsNullOrWhiteSpace(client.Surname) 
+            && !string.IsNullOrEmpty(client.Email) 
+            && !string.IsNullOrWhiteSpace(client.Email) 
+            && client.BirthDate != DateTime.MinValue)
+            {
+                string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+                Regex regex = new Regex(pattern);
+                return regex.IsMatch(client.Email);
+            }
+            
+            logger.Error("All customer data must be filled in correctly!");
             return false;
         }
     }

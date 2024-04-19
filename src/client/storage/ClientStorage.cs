@@ -21,7 +21,7 @@ namespace client.storage
         {
             try
             {
-                string sql = "INSERT INTO client (name, surname, email, birthdate, created_at, active) VALUES (@Name, @Surname, @Email, @BirthDate, NOW(), @Active)";
+                string sql = "INSERT INTO client (name, surname, email, birthdate, active) VALUES (@Name, @Surname, @Email, @BirthDate, @Active)";
                 
                 using (MySqlCommand command = new MySqlCommand(sql, _connection))
                 {
@@ -69,8 +69,7 @@ namespace client.storage
                             DateTime createdAt = createdAtUtc.ToLocalTime();
                             DateTime updatedAtUtc = reader.GetDateTime("updated_at");
                             DateTime updatedAt = updatedAtUtc.ToLocalTime();
-                            bool active = reader.GetBoolean("active"); // Corrigido para GetBoolean
-
+                            bool active = reader.GetBoolean("active");
                             client = new ClientModel
                             {
                                 Id = clientId,
@@ -180,7 +179,7 @@ namespace client.storage
                     }   
                     else
                     {
-                        logger.Info("No client found with the provided ID.");
+                        logger.Info($"No client found with ID: {id} or client is not active.");
                         return false;
                     }                         
                 }
