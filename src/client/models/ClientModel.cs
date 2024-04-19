@@ -14,8 +14,6 @@ namespace client.models
         public bool Active {get; set;}
         public ClientModel() 
         {
-            CreatedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
             Active = true;
         }
     }

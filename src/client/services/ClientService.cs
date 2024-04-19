@@ -28,6 +28,11 @@ namespace client.services
             return clientList;
         }
 
+        public ClientModel selectById(int id)
+        {
+            ClientModel client = storage.selectById(id);
+            return client;
+        }
         public bool IsValidDataClient(ClientModel client)
         {
             if (!string.IsNullOrEmpty(client.Name) && !string.IsNullOrWhiteSpace(client.Name) && !string.IsNullOrEmpty(client.Surname) && !string.IsNullOrWhiteSpace(client.Surname) && client.BirthDate != DateTime.MinValue)
@@ -39,6 +44,31 @@ namespace client.services
             }
             
             logger.Error("All customer data must be filled in correctly!");
+            return false;
+        }
+
+        public bool Update(int id, ClientModel client)
+        {
+            var isValidateDataClient = IsValidDataClient(client);
+            var clienteUpdate = storage.Update(id, client);
+
+            if(isValidateDataClient && clienteUpdate){
+                
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Delete(int id)
+        {
+            var clienteDelete = storage.Delete(id);
+
+            if(clienteDelete){
+
+                return true;
+            }
+
             return false;
         }
     }

@@ -40,9 +40,36 @@ namespace client.api
                 {
                     InsertClient(request, response);
                 }
-                else if(request.HttpMethod == "GET" && request.Url.AbsolutePath == "/client")
+                else if(request.HttpMethod == "GET" && request.Url.AbsolutePath == "/client" || request.Url.AbsolutePath == "/client/")
                 {
                     SelectClient(request, response);
+                }
+                else if(request.HttpMethod == "GET" && request.Url.AbsolutePath.StartsWith("/client/"))
+                {
+                    string[] segments = request.Url.Segments;
+                    int id;
+                    
+                    if(segments.Length > 2 && int.TryParse(segments[2], out id)){
+                        selectClientById(request, response, id);
+                    }
+                }
+                else if(request.HttpMethod == "PUT" && request.Url.AbsolutePath.StartsWith("/client/"))
+                {
+                    string[] segments = request.Url.Segments;
+                    int id;
+                    
+                    if(segments.Length > 2 && int.TryParse(segments[2], out id)){
+                        UpdateClient(request, response, id);
+                    }
+                }
+                else if (request.HttpMethod == "DELETE" && request.Url.AbsolutePath.StartsWith("/client/"))
+                {
+                    string[] segments = request.Url.Segments;
+                    int id;
+                    
+                    if(segments.Length > 2 && int.TryParse(segments[2], out id)){
+                        DeleteClient(request, response, id);
+                    }
                 }
                 else
                 {
@@ -65,6 +92,8 @@ namespace client.api
             catch (JsonException ex)
             {
                 logger.Error($"Error deserializing JSON: {ex.Message}");
+                SendResponse(response, HttpStatusCode.BadRequest, "Invalid JSON format");
+                return;
             }
 
             var responseInsert = service.Insert(client);
@@ -81,12 +110,6 @@ namespace client.api
         {
             try
             {
-                string requestBody;
-                using (StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding))
-                {
-                    requestBody = reader.ReadToEnd();
-                }
-
                 List<ClientModel> clientList = service.Select();
 
                 if(clientList != null)
@@ -104,6 +127,88 @@ namespace client.api
                 SendResponse(response, HttpStatusCode.InternalServerError, $"Error: {ex.Message}");
             }
         }
+
+        private void selectClientById(HttpListenerRequest request, HttpListenerResponse response, int id)
+        {
+            try
+            {
+                client = service.selectById(id);
+            
+                if(client != null)
+                {
+                    string responseBody = JsonConvert.SerializeObject(client);
+                    SendResponse(response, HttpStatusCode.OK, responseBody);
+                }
+                else
+                {
+                    SendResponse(response, HttpStatusCode.NotFound, "client not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                SendResponse(response, HttpStatusCode.InternalServerError, $"Error: {ex.Message}");
+            }
+            
+        }
+
+        private void UpdateClient(HttpListenerRequest request, HttpListenerResponse response, int id)
+        {
+            string requestBody;
+
+            using (StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding))
+            {
+                requestBody = reader.ReadToEnd();
+            }
+            // Desserializar a string JSON para um objeto Cliente
+            try
+            {
+                client = JsonConvert.DeserializeObject<ClientModel>(requestBody);
+            }
+            catch (JsonException ex)
+            {
+                logger.Error($"Error deserializing JSON: {ex.Message}");
+                SendResponse(response, HttpStatusCode.BadRequest, "Invalid JSON format");
+                return;
+            }
+            
+            if (client == null)
+            {
+                SendResponse(response, HttpStatusCode.BadRequest, "Invalid client data");
+                return;
+            }    
+            var responseUpdate = service.Update(id, client);
+
+            if (responseUpdate)
+            {
+                SendResponse(response, HttpStatusCode.OK, "Client updated successfully");
+            }
+            else
+            {
+                SendResponse(response, HttpStatusCode.NotFound, "No client found with the provided ID.");
+            }
+        }
+
+        private void DeleteClient(HttpListenerRequest request, HttpListenerResponse response, int id)
+        {
+            try
+            {
+                var clientDelete = service.Delete(id);
+            
+                if(clientDelete)
+                {
+                    SendResponse(response, HttpStatusCode.OK, "client deleted  successfully");
+                }
+                else
+                {
+                    SendResponse(response, HttpStatusCode.NotFound, "client not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                SendResponse(response, HttpStatusCode.InternalServerError, $"Error: {ex.Message}");
+            }
+        }
+
         private void SendResponse(HttpListenerResponse response, HttpStatusCode statusCode, string message)
         {
             response.StatusCode = (int)statusCode;

@@ -9,7 +9,6 @@ namespace plataforma_tcc
     {
         static void Main(string[] args)
         {
-            // Cria uma instância de ClientApi e inicia o servidor
             ClientApi api = new ClientApi();
             api.Start();
         }
