@@ -9,7 +9,22 @@ services:
       - MYSQL_DATABASE=client_data
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./sql-scripts:/docker-entrypoint-initdb.d  # Adicionando essa linha
+      - ./sql-scripts-client:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+
+  postgres_server:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=plataforma_tcc_2024
+      - POSTGRES_DB=product_data
+      - POSTGRES_INITDB_SCRIPTS_PATH=/docker-entrypoint-initdb.d-product
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql-scripts-product:/docker-entrypoint-initdb.d-product
     networks:
       - backend
 
@@ -18,4 +33,5 @@ networks:
 
 volumes:
   mysql_data:
+  postgres_data:
 
